@@ -1,10 +1,13 @@
 // /frontend/src/routes/expenses.detail.tsx
+import { useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
 type Expense = { id: number; title: string; amount: number };
 const API = "/api"; // if you’re using Vite proxy; otherwise "http://localhost:3000/api"
 
-export default function ExpenseDetailPage({ id }: { id: number }) {
+export default function ExpenseDetailPage() {
+  const { id } = useParams({ from: "/expenses/$id" });
+
   // useQuery caches by key ['expenses', id]
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["expenses", id],

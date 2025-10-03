@@ -7,6 +7,7 @@ import {
 import App from "./App";
 import ExpenseNewPage from "./routes/expenses.new";
 import ExpensesListPage from "./routes/expenses.list";
+import ExpenseDetailPage from "./routes/expenses.details";
 
 const rootRoute = createRootRoute({
   component: App,
@@ -30,10 +31,20 @@ const expensesNewRoute = createRoute({
   component: ExpenseNewPage,
 });
 
+const expensesDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/expenses/$id",
+  validateParams: ({ id }) => ({
+    id: Number(id),
+  }),
+  component: ExpenseDetailPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   expensesRoute,
   expensesNewRoute,
+  expensesDetailRoute, // Add the detail route
 ]);
 
 export const router = createRouter({ routeTree });
