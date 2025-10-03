@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { expensesRoute } from "./routes/expenses";
 import { cors } from "hono/cors";
+import { authRoute } from "./auth/kinde";
+import { secureRoute } from "./routes/secure";
 
 export const app = new Hono();
 
@@ -13,9 +15,10 @@ app.use("*", logger());
 app.use(
   "/api/*",
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173"],
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Important for authentication
   })
 );
 
@@ -33,3 +36,5 @@ app.get("/health", (c) => c.json({ status: "healthy" }));
 
 // Mount API routes
 app.route("/api/expenses", expensesRoute);
+app.route("/api/auth", authRoute);
+app.route("/api/secure", secureRoute);
