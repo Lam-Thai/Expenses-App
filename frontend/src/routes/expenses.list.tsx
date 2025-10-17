@@ -1,6 +1,7 @@
 // /frontend/src/routes/expenses.list.tsx
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { formatCurrency } from "@/lib/utils";
 
 export type Expense = { id: number; title: string; amount: number };
 
@@ -72,7 +73,7 @@ export default function ExpensesListPage() {
               >
                 {e.title}
               </Link>
-              <span className="tabular-nums">${e.amount}</span>
+              <span className="tabular-nums">{formatCurrency(e.amount)}</span>
             </li>
           ))}
         </ul>

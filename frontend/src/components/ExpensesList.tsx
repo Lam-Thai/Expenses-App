@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { formatCurrency } from "@/lib/utils";
 
 type Expense = {
   id: number;
@@ -13,13 +14,7 @@ export function ExpensesList() {
   const qc = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-    isFetching,
-  } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {
       const res = await fetch("/api/expenses", {
@@ -182,7 +177,7 @@ export function ExpensesList() {
             <div className="flex flex-col">
               <span className="font-medium">{expense.title}</span>
               <span className="text-sm text-muted-foreground">
-                ${expense.amount}
+                {formatCurrency(expense.amount)}
               </span>
             </div>
             <div className="flex items-center gap-3">
