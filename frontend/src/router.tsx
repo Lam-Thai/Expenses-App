@@ -31,6 +31,27 @@ const expensesNewRoute = createRoute({
   component: ExpenseNewPage,
 });
 
+const expensesUploadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/expenses/upload",
+  component: () => (
+    <div className="mx-auto max-w-3xl p-6">
+      <h2 className="text-xl font-semibold mb-4">Upload Receipt</h2>
+      <div className="rounded border bg-background p-6">
+        <p className="text-sm text-muted-foreground mb-4">
+          Please select an expense first to upload a receipt.
+        </p>
+        <a
+          href="/expenses"
+          className="text-primary hover:text-primary/90 underline"
+        >
+          View Expenses
+        </a>
+      </div>
+    </div>
+  ),
+});
+
 const expensesDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/expenses/$id",
@@ -44,7 +65,8 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   expensesRoute,
   expensesNewRoute,
-  expensesDetailRoute, // Add the detail route
+  expensesUploadRoute, // Keep this before expensesDetailRoute
+  expensesDetailRoute,
 ]);
 
 export const router = createRouter({ routeTree });

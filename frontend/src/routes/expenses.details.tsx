@@ -1,8 +1,15 @@
 // /frontend/src/routes/expenses.detail.tsx
 import { useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { UploadExpenseForm } from "@/components/UploadExpenseForm";
 
-type Expense = { id: number; title: string; amount: number };
+type Expense = {
+  id: number;
+  title: string;
+  amount: number;
+  fileUrl: string | null;
+};
+
 const API = "/api"; // if you’re using Vite proxy; otherwise "http://localhost:3000/api"
 
 export default function ExpenseDetailPage() {
@@ -12,9 +19,13 @@ export default function ExpenseDetailPage() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["expenses", id],
     queryFn: async () => {
-      const res = await fetch(`${API}/expenses/${id}`);
+      const res = await fetch(`${API}/expenses/${id}`, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error(`Failed to fetch expense with id ${id}`);
-      return res.json() as Promise<{ expense: Expense }>;
+      const json = await res.json();
+      console.log("Expense data:", json); // Add this debug log
+      return json as Promise<{ expense: Expense }>;
     },
   });
 
@@ -39,6 +50,37 @@ export default function ExpenseDetailPage() {
         <h2 className="text-xl font-semibold">{item.title}</h2>
         <p className="mt-2 text-sm text-muted-foreground">Amount</p>
         <p className="text-lg tabular-nums">#{item.amount}</p>
+
+        {/* Make the Receipt section more prominent */}
+        <div className="mt-6 p-4 border rounded-lg bg-muted/5">
+          <h3 className="text-lg font-medium mb-4">Receipt Management</h3>
+
+          {item.fileUrl ? (
+            <div className="flex items-center gap-4">
+              <a
+                href={item.fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-md bg-primary px-4 py-2 text-primary-foreground transition-colors hover:bg-primary/90"
+                onClick={(e) => {
+                  if (!item.fileUrl?.startsWith("http")) {
+                    e.preventDefault();
+                    console.error("Invalid download URL:", item.fileUrl);
+                  }
+                }}
+              >
+                Download Receipt
+              </a>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">
+                No receipt uploaded yet.
+              </p>
+              <UploadExpenseForm expenseId={item.id} />
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

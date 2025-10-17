@@ -1,6 +1,6 @@
 // server/routes/secure.ts
 import { Hono } from "hono";
-import { requireAuth } from "../auth/requiredAuth";
+import requireAuth from "../auth/requiredAuth";
 import type { User } from "@kinde-oss/kinde-typescript-sdk";
 
 type Variables = {

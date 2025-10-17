@@ -2,7 +2,8 @@
 import type { Context } from "hono";
 import { kindeClient, sessionFromHono } from "./kinde";
 
-export async function requireAuth(c: Context) {
+// Change to export default
+export default async function requireAuth(c: Context) {
   const session = sessionFromHono(c);
   const authed = await kindeClient.isAuthenticated(session);
   if (!authed) return c.json({ error: "Unauthorized" }, 401);
