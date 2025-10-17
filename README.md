@@ -1,4 +1,4 @@
-# comp3330-expensetracker
+# Expenses Tracker App
 
 To install dependencies:
 
