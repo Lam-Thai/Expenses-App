@@ -18,7 +18,11 @@ app.use("*", logger());
 app.use(
   "/api/*",
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      // Add your Render.com domain
+      process.env.FRONTEND_URL || "http://localhost:5173",
+    ],
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,

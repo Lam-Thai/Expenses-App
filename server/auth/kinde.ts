@@ -16,7 +16,7 @@ export const kindeClient = createKindeServerClient(
     clientId: process.env.KINDE_CLIENT_ID!,
     clientSecret: process.env.KINDE_CLIENT_SECRET!,
     redirectURL: process.env.KINDE_REDIRECT_URI!,
-    logoutRedirectURL: FRONTEND_URL,
+    logoutRedirectURL: process.env.FRONTEND_URL || "http://localhost:5173",
   }
 );
 
