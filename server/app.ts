@@ -6,8 +6,8 @@ import { cors } from "hono/cors";
 import { authRoute } from "./auth/kinde";
 import { secureRoute } from "./routes/secure";
 import { uploadRoute } from "./routes/upload";
-import { healthRoute } from "./routes/health"; // Add this import
-import { serveStatic } from "hono/serve-static";
+import { healthRoute } from "./routes/health";
+import { serveStatic } from "@hono/node-server/serve-static";
 
 export const app = new Hono();
 
@@ -51,7 +51,10 @@ app.get("*", async (c) => {
 
   // Serve index.html for all other routes
   try {
-    const html = await Bun.file("./server/public/index.html").text();
+    // Use Node.js fs instead of Bun.file
+    const html = await import("fs/promises").then((fs) =>
+      fs.readFile("./server/public/index.html", "utf-8")
+    );
     return c.html(html);
   } catch (error) {
     console.error("Failed to serve index.html:", error);
