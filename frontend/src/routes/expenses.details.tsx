@@ -49,7 +49,7 @@ export default function ExpenseDetailPage() {
       <div className="rounded border bg-background text-foreground p-6">
         <h2 className="text-xl font-semibold">{item.title}</h2>
         <p className="mt-2 text-sm text-muted-foreground">Amount</p>
-        <p className="text-lg tabular-nums">#{item.amount}</p>
+        <p className="text-lg tabular-nums">${item.amount}</p>
 
         {/* Make the Receipt section more prominent */}
         <div className="mt-6 p-4 border rounded-lg bg-muted/5">

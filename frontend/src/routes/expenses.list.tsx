@@ -72,7 +72,7 @@ export default function ExpensesListPage() {
               >
                 {e.title}
               </Link>
-              <span className="tabular-nums">#{e.amount}</span>
+              <span className="tabular-nums">${e.amount}</span>
             </li>
           ))}
         </ul>
