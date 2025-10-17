@@ -29,7 +29,9 @@ export function AuthBar() {
       {user ? (
         <>
           <span className="text-muted-foreground">
-            {user.email ?? user.sub}
+            {((user && typeof (user as unknown as Record<string, unknown>).email === "string")
+              ? (user as unknown as { email?: string }).email
+              : user?.id) || "User"}
           </span>
           <a
             className="rounded bg-primary px-3 py-1 text-primary-foreground"

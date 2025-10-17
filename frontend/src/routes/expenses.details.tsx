@@ -1,7 +1,7 @@
 // /frontend/src/routes/expenses.detail.tsx
 import { useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { UploadExpenseForm } from "@/components/UploadExpenseForm";
+import { UploadExpenseForm } from "../components/UploadExpenseForm";
 
 type Expense = {
   id: number;

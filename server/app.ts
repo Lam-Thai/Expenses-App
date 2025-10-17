@@ -6,20 +6,22 @@ import { cors } from "hono/cors";
 import { authRoute } from "./auth/kinde";
 import { secureRoute } from "./routes/secure";
 import { uploadRoute } from "./routes/upload";
+import { healthRoute } from "./routes/health"; // Add this import
+import { serveStatic } from "hono/serve-static";
 
 export const app = new Hono();
 
-// Global logger (from Lab 1)
+// Global logger
 app.use("*", logger());
 
-// Add CORS middleware before routes
+// Add CORS middleware for API routes
 app.use(
   "/api/*",
   cors({
     origin: ["http://localhost:5173"],
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Important for authentication
+    credentials: true,
   })
 );
 
@@ -31,13 +33,28 @@ app.use("*", async (c, next) => {
   c.header("X-Response-Time", `${ms}ms`);
 });
 
-// Health & root
-app.get("/", (c) => c.json({ message: "OK" }));
-app.get("/health", (c) => c.json({ status: "healthy" }));
-
-// Mount API routes
+// API Routes - define these BEFORE static/fallback handlers
 app.route("/api/expenses", expensesRoute);
 app.route("/api/auth", authRoute);
 app.route("/api/secure", secureRoute);
-
 app.route("/api/upload", uploadRoute);
+app.route("/health", healthRoute);
+
+// Serve static files from public directory
+app.use("/*", serveStatic({ root: "./server/public" }));
+
+// SPA fallback for client-side routing
+app.get("*", async (c) => {
+  const url = new URL(c.req.url);
+  // Skip API routes
+  if (url.pathname.startsWith("/api")) return c.notFound();
+
+  // Serve index.html for all other routes
+  try {
+    const html = await Bun.file("./server/public/index.html").text();
+    return c.html(html);
+  } catch (error) {
+    console.error("Failed to serve index.html:", error);
+    return c.text("Internal Server Error", 500);
+  }
+});

@@ -55,8 +55,8 @@ const expensesUploadRoute = createRoute({
 const expensesDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/expenses/$id",
-  validateParams: ({ id }) => ({
-    id: Number(id),
+  parseParams: (params) => ({
+    id: Number(params.id),
   }),
   component: ExpenseDetailPage,
 });
