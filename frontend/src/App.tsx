@@ -19,6 +19,7 @@ export default function App() {
                     className:
                       "bg-primary text-primary-foreground hover:bg-primary/90",
                   }}
+                  activeOptions={{ exact: true }}
                 >
                   Home
                 </Link>
@@ -29,6 +30,7 @@ export default function App() {
                     className:
                       "bg-primary text-primary-foreground hover:bg-primary/90",
                   }}
+                  activeOptions={{ exact: true }}
                 >
                   Expenses
                 </Link>
