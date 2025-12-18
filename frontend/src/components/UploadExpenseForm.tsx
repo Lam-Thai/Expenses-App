@@ -15,13 +15,10 @@ export function UploadExpenseForm({ expenseId }: UploadExpenseFormProps) {
       setIsUploading(true);
       setError(null);
       try {
-        // 1. Get signed URL with credentials
         const signResponse = await fetch("/api/upload/sign", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Important: include credentials
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ filename: file.name, type: file.type }),
         });
 
@@ -35,7 +32,6 @@ export function UploadExpenseForm({ expenseId }: UploadExpenseFormProps) {
 
         const { uploadUrl, key } = await signResponse.json();
 
-        // 2. Upload file to signed URL
         const uploadResponse = await fetch(uploadUrl, {
           method: "PUT",
           headers: { "Content-Type": file.type },
@@ -47,7 +43,6 @@ export function UploadExpenseForm({ expenseId }: UploadExpenseFormProps) {
           throw new Error(`Failed to upload file: ${errorText}`);
         }
 
-        // 3. Update expense with file key
         const updateResponse = await fetch(`/api/expenses/${expenseId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -60,7 +55,6 @@ export function UploadExpenseForm({ expenseId }: UploadExpenseFormProps) {
           throw new Error(`Failed to update expense: ${errorText}`);
         }
 
-        // After successful upload, immediately invalidate queries
         queryClient.invalidateQueries({ queryKey: ["expenses"] });
         queryClient.invalidateQueries({ queryKey: ["expenses", expenseId] });
       } catch (err) {
@@ -72,41 +66,82 @@ export function UploadExpenseForm({ expenseId }: UploadExpenseFormProps) {
       }
     },
     onSuccess: () => {
-      // Clear any errors and reset upload state
       setError(null);
       setIsUploading(false);
     },
   });
 
   return (
-    <div className="mt-4">
-      <input
-        type="file"
-        accept="image/*,application/pdf" // Add accepted file types
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            uploadMutation.mutate(file);
-          }
-        }}
-        disabled={isUploading}
-        className="block w-full text-sm text-gray-500
-          file:mr-4 file:py-2 file:px-4
-          file:rounded-full file:border-0
-          file:text-sm file:font-semibold
-          file:bg-primary file:text-primary-foreground
-          hover:file:bg-primary/90"
-      />
-      {isUploading && (
-        <p className="mt-2 text-sm text-muted-foreground">Uploading...</p>
+    <div>
+      <label className="group relative block cursor-pointer">
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              uploadMutation.mutate(file);
+            }
+          }}
+          disabled={isUploading}
+          className="hidden"
+        />
+        <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white px-6 py-4 text-center transition-all group-hover:border-primary group-hover:bg-primary/5">
+          {isUploading ? (
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <span className="font-medium text-primary">Uploading...</span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-3">
+              <svg
+                className="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
+              </svg>
+              <span className="font-medium group-hover:text-primary transition-colors">
+                Click to upload or drag and drop
+              </span>
+            </div>
+          )}
+        </div>
+      </label>
+
+      {error && (
+        <div className="mt-3 rounded-lg bg-destructive/10 border border-destructive/20 p-3 flex items-start gap-2">
+          <svg
+            className="h-5 w-5 text-destructive flex-shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
       )}
-      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
-      {uploadMutation.isError && (
-        <p className="mt-2 text-sm text-destructive">
-          {uploadMutation.error instanceof Error
-            ? uploadMutation.error.message
-            : "Upload failed"}
-        </p>
+
+      {uploadMutation.isError && !error && (
+        <div className="mt-3 rounded-lg bg-destructive/10 border border-destructive/20 p-3">
+          <p className="text-sm text-destructive">
+            {uploadMutation.error instanceof Error
+              ? uploadMutation.error.message
+              : "Upload failed"}
+          </p>
+        </div>
       )}
     </div>
   );
