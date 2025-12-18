@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const API = "/api"; // if no Vite proxy, use: 'http://localhost:3000/api'
+const API = "/api";
 
 export default function ExpenseNewPage() {
   const router = useRouter();
@@ -29,7 +29,6 @@ export default function ExpenseNewPage() {
       }>;
     },
     onSuccess: () => {
-      // Refresh the list and go back
       qc.invalidateQueries({ queryKey: ["expenses"] });
       router.navigate({ to: "/expenses" });
     },
@@ -49,52 +48,97 @@ export default function ExpenseNewPage() {
   }
 
   return (
-    <section className="mx-auto max-w-3xl p-6">
+    <section className="mx-auto max-w-2xl">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold">Add New Expense</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Record a new expense to track your spending
+        </p>
+      </div>
+
       <form
         onSubmit={onSubmit}
-        className="space-y-3 rounded border bg-background p-6"
+        className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
       >
-        <h2 className="text-xl font-semibold">New Expense</h2>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Expense Title <span className="text-destructive">*</span>
+            </label>
+            <input
+              className="w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent transition-all"
+              placeholder="e.g., Coffee, Groceries, Gas"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={createExpense.isPending}
+            />
+          </div>
 
-        <label className="block">
-          <span className="text-sm text-muted-foreground">Title</span>
-          <input
-            className="mt-1 w-full rounded-md border border-input bg-background p-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            placeholder="Coffee"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Amount ($) <span className="text-destructive">*</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                $
+              </span>
+              <input
+                className="w-full rounded-lg border border-input bg-background pl-8 pr-4 py-3 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-transparent transition-all"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) =>
+                  setAmount(e.target.value === "" ? "" : Number(e.target.value))
+                }
+                disabled={createExpense.isPending}
+              />
+            </div>
+          </div>
 
-        <label className="block">
-          <span className="text-sm text-muted-foreground">Amount</span>
-          <input
-            className="mt-1 w-52 rounded-md border border-input bg-background p-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            type="number"
-            placeholder="4"
-            value={amount}
-            onChange={(e) =>
-              setAmount(e.target.value === "" ? "" : Number(e.target.value))
-            }
-          />
-        </label>
+          {error && (
+            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 flex items-start gap-3">
+              <svg
+                className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <div className="flex items-center gap-2">
-          <button
-            className="rounded bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
-            disabled={createExpense.isPending}
-          >
-            {createExpense.isPending ? "Saving…" : "Save"}
-          </button>
-          <button
-            type="button"
-            className="text-sm underline"
-            onClick={() => router.navigate({ to: "/expenses" })}
-          >
-            Cancel
-          </button>
+          <div className="flex items-center gap-3 pt-4">
+            <button
+              type="submit"
+              className="flex-1 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={createExpense.isPending}
+            >
+              {createExpense.isPending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                  Saving...
+                </span>
+              ) : (
+                "Save Expense"
+              )}
+            </button>
+            <button
+              type="button"
+              className="rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              onClick={() => router.navigate({ to: "/expenses" })}
+              disabled={createExpense.isPending}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </form>
     </section>
