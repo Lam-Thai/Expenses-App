@@ -14,7 +14,8 @@ type Expense = {
 const API = "/api";
 
 export default function ExpenseDetailPage() {
-  const { id } = useParams({ from: "/expenses/$id" });
+  const params = useParams({ from: "/expenses/$id" });
+  const id = Number(params.id); // ensure it's always a number
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -26,7 +27,7 @@ export default function ExpenseDetailPage() {
       });
       if (!res.ok) throw new Error(`Failed to fetch expense with id ${id}`);
       const json = await res.json();
-      return json as Promise<{ expense: Expense }>;
+      return json as { expense: Expense };
     },
   });
 
@@ -89,47 +90,37 @@ export default function ExpenseDetailPage() {
   }
 
   return (
-    <section className="mx-auto max-w-3xl">
-      <div className="mb-6 flex items-center justify-between">
+    <section className="mx-auto max-w-3xl w-full">
+      {/* DELETE BUTTON - placed at top, full width, hard to miss */}
+      <button
+        onClick={() => {
+          if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
+            deleteExpense.mutate();
+          }
+        }}
+        disabled={deleteExpense.isPending}
+        style={{
+          backgroundColor: "red",
+          color: "white",
+          padding: "12px 24px",
+          width: "100%",
+          marginBottom: "16px",
+          borderRadius: "8px",
+          fontSize: "16px",
+          fontWeight: "bold",
+          cursor: "pointer",
+        }}
+      >
+        {deleteExpense.isPending ? "Deleting..." : "🗑️ DELETE THIS EXPENSE"}
+      </button>
+
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold">Expense Details</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             View and manage your expense information
           </p>
         </div>
-        <button
-          onClick={() => {
-            if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
-              deleteExpense.mutate();
-            }
-          }}
-          disabled={deleteExpense.isPending}
-          className="flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {deleteExpense.isPending ? (
-            <>
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-destructive-foreground border-t-transparent" />
-              Deleting...
-            </>
-          ) : (
-            <>
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-              Delete Expense
-            </>
-          )}
-        </button>
       </div>
 
       {deleteExpense.isError && (
