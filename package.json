@@ -12,7 +12,7 @@
     "vite": "^7.1.6"
   },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cp -r dist/* ../server/public/",
+    "build": "cd frontend && npm install && npm run build",
     "start": "bun server/index.ts",
     "dev": "bun --hot server/index.ts",
     "db:generate": "drizzle-kit generate",
