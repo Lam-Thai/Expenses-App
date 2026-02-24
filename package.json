@@ -5,8 +5,10 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/node": "^22.0.0",
     "dotenv": "^17.2.2",
-    "drizzle-kit": "^0.31.4"
+    "drizzle-kit": "^0.31.4",
+    "typescript": "^5.0.0"
   },
   "scripts": {
     "start": "bun server/index.ts",
@@ -14,9 +16,6 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.911.0",

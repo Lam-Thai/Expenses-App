@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build && cp -r dist/* ../server/public/",
+  "outputDirectory": "server/public",
+  "installCommand": "npm install"
+}
